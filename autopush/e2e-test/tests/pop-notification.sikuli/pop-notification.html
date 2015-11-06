@@ -77,7 +77,9 @@
 <span class="kw">else</span>:
     APP_NAME = <span class="str">'Nightly'</span>
 
-NIGHTLY64 = <span class="str">"C:/Program Files/%s/firefox.exe -height 768 -width 1024"</span> % APP_NAME
+PATH_PROFILE = <span class="str">"C:/Jenkins/workspace/services-test/autopush/e2e-test/tests/prefs/prefs.js"</span>
+
+NIGHTLY64 = <span class="str">"C:/Program Files/%s/firefox.exe -height 768 -width 1024"</span> % (APP_NAME)
 PATH_FIREFOX = NIGHTLY64
 
 <span class="kw">if</span> APP_NAME == <span class="str">'Nightly'</span>:
@@ -108,7 +110,8 @@ firefox = App(APP_NAME)
     <span class="kw">return</span> <span class="str">'%s\n%s\n%s'</span> % (LINE, label, LINE)
 
 <span class="kw">def</span> setup():
-
+    <span class="cmt"># firefox.close()
+</span>
     <span class="kw">print</span> header(<span class="str">'SETUP'</span>)
     firefox.open(PATH_FIREFOX)
     <span class="kw">if</span> exists(IMG_REFRESH):
@@ -123,7 +126,7 @@ firefox = App(APP_NAME)
     <span class="cmt">#print('%s\n%s\n%s' % (LINE, 'TEARDOWN', LINE))
 </span>    <span class="kw">print</span> header(<span class="str">'TEARDOWN'</span>)
     <span class="kw">print</span>(<span class="str">'closing browser now'</span>)
-    firefox.close()
+    <span class="skw">type</span>(<span class="str">'w'</span>, Key.SHIFT + Key.CTRL)
     <span class="kw">print</span>(<span class="str">'Firefox closed'</span>)
 
 setup()
@@ -139,9 +142,12 @@ setup()
 <span class="kw">elif</span> exists(URL_ENTRY_POINT_3):
     <span class="kw">print</span>(<span class="str">'URL ENTRY POINT: &lt;Nightly...&gt;'</span>)
     <span class="skw">click</span>(URL_ENTRY_POINT_3)
-<span class="kw">else</span>:
+<span class="kw">elif</span> exists(URL_ENTRY_POINT_4):
     <span class="kw">print</span>(<span class="str">'URL ENTRY POINT: &lt;green padlock&gt;'</span>)
     <span class="skw">click</span>(URL_ENTRY_POINT_4)
+<span class="kw">else</span>:
+    <span class="kw">print</span>(<span class="str">'ERROR: can\'t find URL bar!'</span>)
+    exit(<span class="dig">1</span>)
 <span class="skw">type</span>(URL_TEST_PAGE + Key.ENTER)
 
 <span class="skw">click</span>(IMG_BTN_POP_NOTIFICATION)

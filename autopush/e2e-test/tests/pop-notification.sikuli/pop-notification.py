@@ -5,7 +5,9 @@ if os.getenv('APP_NAME'):
 else:
     APP_NAME = 'Nightly'
 
-NIGHTLY64 = "C:/Program Files/%s/firefox.exe -height 768 -width 1024" % APP_NAME
+PATH_PROFILE = "C:/Jenkins/workspace/services-test/autopush/e2e-test/tests/prefs/prefs.js"
+               
+NIGHTLY64 = "C:/Program Files/%s/firefox.exe -height 768 -width 1024" % (APP_NAME)
 PATH_FIREFOX = NIGHTLY64
 
 if APP_NAME == 'Nightly':
@@ -36,6 +38,7 @@ def header(label):
     return '%s\n%s\n%s' % (LINE, label, LINE)
     
 def setup():
+    # firefox.close()
     
     print header('SETUP')
     firefox.open(PATH_FIREFOX)
@@ -51,7 +54,7 @@ def teardown():
     #print('%s\n%s\n%s' % (LINE, 'TEARDOWN', LINE))
     print header('TEARDOWN')
     print('closing browser now')
-    firefox.close()
+    type('w', Key.SHIFT + Key.CTRL)
     print('Firefox closed')
     
 setup()
@@ -67,9 +70,12 @@ elif exists(URL_ENTRY_POINT_2):
 elif exists(URL_ENTRY_POINT_3):
     print('URL ENTRY POINT: <Nightly...>')
     click(URL_ENTRY_POINT_3)
-else:
+elif exists(URL_ENTRY_POINT_4):
     print('URL ENTRY POINT: <green padlock>')
     click(URL_ENTRY_POINT_4)
+else:
+    print('ERROR: can\'t find URL bar!')
+    exit(1)
 type(URL_TEST_PAGE + Key.ENTER)
 
 click(IMG_BTN_POP_NOTIFICATION)
