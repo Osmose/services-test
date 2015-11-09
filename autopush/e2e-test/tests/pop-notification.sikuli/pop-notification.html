@@ -113,11 +113,6 @@ OS_VERSION = Settings.getOSVersion()
 URL_TEST_PAGE = <span class="str">'https://pdehaan.github.io/push-notification-test'</span>
 
 IMG_REFRESH = PATH_IMGS + <img src="btn_refresh.png" /> <span class="cmt"># </span>
-URL_ENTRY_POINT_1 = Pattern(PATH_IMGS + <img src="url_entry_moz.png" />).targetOffset(<span class="dig">110</span>,-<span class="dig">4</span>)
-URL_ENTRY_POINT_2 = PATH_IMGS + <img src="url_entry_search.png" />
-URL_ENTRY_POINT_3 = Pattern(PATH_IMGS + <img src="url_entry_nightly.png" />).targetOffset(<span class="dig">59</span>,<span class="dig">0</span>)
-URL_ENTRY_POINT_4 = Pattern(PATH_IMGS + <img src="url_entry_green_padlock.png" />).targetOffset(<span class="dig">59</span>,<span class="dig">1</span>)
-IMG_WIN_MAXIMIZE = PATH_IMGS + <img src="win_maximize.png" />
 IMG_ALWAYS_RECEIVE_NOTIFICATIONS = PATH_IMGS + <img src="btn_always_receive.png" />
 IMG_BTN_POP_NOTIFICATION = PATH_IMGS + <img src="btn_pop_notification.png" />
 IMG_WIN_POP_NOTIFICATION = PATH_IMGS + <img src="win_pop_notification.png" />
@@ -134,11 +129,7 @@ firefox = App(APP_NAME)
 </span>
     <span class="kw">print</span> header(<span class="str">'SETUP'</span>)
     firefox.open(PATH_FIREFOX)
-    <span class="kw">if</span> exists(IMG_REFRESH):
-        <span class="kw">print</span>(<span class="str">'REFRESH NIGHTLY: TRYING....!'</span>)
-        <span class="skw">click</span>(IMG_REFRESH)
-        <span class="skw">click</span>(<img src="1446188189853.png" />)
-
+    <span class="skw">sleep</span>(<span class="dig">3</span>)
     firefox.focus()
 
 <span class="kw">def</span> teardown():
@@ -153,22 +144,9 @@ setup()
 
 <span class="kw">print</span> header(<span class="str">'TEST'</span>)
 
-<span class="kw">if</span> exists(URL_ENTRY_POINT_1):
-    <span class="kw">print</span>(<span class="str">'URL ENTRY POINT: &lt;Mozilla Foundation&gt;'</span>)
-    <span class="skw">click</span>(URL_ENTRY_POINT_1)
-<span class="kw">elif</span> exists(URL_ENTRY_POINT_2):
-    <span class="kw">print</span>(<span class="str">'URL ENTRY POINT: &lt;Search or enter address&gt;'</span>)
-    <span class="skw">click</span>(URL_ENTRY_POINT_2)
-<span class="kw">elif</span> exists(URL_ENTRY_POINT_3):
-    <span class="kw">print</span>(<span class="str">'URL ENTRY POINT: &lt;Nightly...&gt;'</span>)
-    <span class="skw">click</span>(URL_ENTRY_POINT_3)
-<span class="kw">elif</span> exists(URL_ENTRY_POINT_4):
-    <span class="kw">print</span>(<span class="str">'URL ENTRY POINT: &lt;green padlock&gt;'</span>)
-    <span class="skw">click</span>(URL_ENTRY_POINT_4)
-<span class="kw">else</span>:
-    <span class="kw">print</span>(<span class="str">'ERROR: can\'t find URL bar!'</span>)
-    exit(<span class="dig">1</span>)
+<span class="skw">type</span>(<span class="str">"l"</span>, Key.CTRL) <span class="cmt"># Focus on location address bar</span>
 <span class="skw">type</span>(URL_TEST_PAGE + Key.ENTER)
+
 
 <span class="skw">click</span>(IMG_BTN_POP_NOTIFICATION)
 

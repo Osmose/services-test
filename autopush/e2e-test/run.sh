@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SKIP_INSTALL="$2"
+SKIP_INSTALL="$1"
 DIR=`dirname "$0"`; DIR=`eval "cd \"$DIR\" && pwd"`
 echo
 echo "run.sh PATH: $DIR"
@@ -62,9 +62,24 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
     #PATH_FIREFOX="/Applications/Firefox.app/Contents/MacOS"
     PATH_FIREFOX="/Applications/FirefoxNN.app/Contents/MacOS"
     echo $PATH_FIREFOX
+
+elif [[ "$OSTYPE" == "cygwin"* ]]; then
+    PATH_FIREFOX="/cygdrive/c/Program Files/Nightly/firefox.exe"
+    PATH_SIKULI="/cygdrive/c/SikuliX/runsikulix.cmd"
+    PATH_JENKINS="C:/Jenkins/workspace"
+
+    AUTOPUSH_TESTS="$PATH_JENKINS/services-test/autopush/e2e-test/tests/pop-notification.sikuli"
+
+    $PATH_SIKULI -c -r $AUTOPUSH_TESTS
+
+    echo $PATH_FIREFOX
+    echo $PATH_SIKULI
+    exit
+
 else
     echo "This should be win - not implemented - ABORTING!"
     exit
+
 fi
 
 echo

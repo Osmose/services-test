@@ -41,11 +41,6 @@ else:
 URL_TEST_PAGE = 'https://pdehaan.github.io/push-notification-test'
 
 IMG_REFRESH = PATH_IMGS + "btn_refresh.png" # 
-URL_ENTRY_POINT_1 = Pattern(PATH_IMGS + "url_entry_moz.png").targetOffset(110,-4)
-URL_ENTRY_POINT_2 = PATH_IMGS + "url_entry_search.png" 
-URL_ENTRY_POINT_3 = Pattern(PATH_IMGS + "url_entry_nightly.png").targetOffset(59,0)
-URL_ENTRY_POINT_4 = Pattern(PATH_IMGS + "url_entry_green_padlock.png").targetOffset(59,1)
-IMG_WIN_MAXIMIZE = PATH_IMGS + "win_maximize.png" 
 IMG_ALWAYS_RECEIVE_NOTIFICATIONS = PATH_IMGS + "btn_always_receive.png"
 IMG_BTN_POP_NOTIFICATION = PATH_IMGS + "btn_pop_notification.png" 
 IMG_WIN_POP_NOTIFICATION = PATH_IMGS + "win_pop_notification.png" 
@@ -62,11 +57,7 @@ def setup():
     
     print header('SETUP')
     firefox.open(PATH_FIREFOX)
-    if exists(IMG_REFRESH):
-        print('REFRESH NIGHTLY: TRYING....!')
-        click(IMG_REFRESH)
-        click("1446188189853.png")
-        
+    sleep(3)
     firefox.focus()
 
 def teardown():
@@ -81,22 +72,9 @@ setup()
 
 print header('TEST')
 
-if exists(URL_ENTRY_POINT_1):
-    print('URL ENTRY POINT: <Mozilla Foundation>')
-    click(URL_ENTRY_POINT_1)
-elif exists(URL_ENTRY_POINT_2):
-    print('URL ENTRY POINT: <Search or enter address>')
-    click(URL_ENTRY_POINT_2)
-elif exists(URL_ENTRY_POINT_3):
-    print('URL ENTRY POINT: <Nightly...>')
-    click(URL_ENTRY_POINT_3)
-elif exists(URL_ENTRY_POINT_4):
-    print('URL ENTRY POINT: <green padlock>')
-    click(URL_ENTRY_POINT_4)
-else:
-    print('ERROR: can\'t find URL bar!')
-    exit(1)
+type("l", Key.CTRL) # Focus on location address bar
 type(URL_TEST_PAGE + Key.ENTER)
+
 
 click(IMG_BTN_POP_NOTIFICATION)
 
