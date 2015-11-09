@@ -10,13 +10,33 @@ PATH_PROFILE = "C:/Jenkins/workspace/services-test/autopush/e2e-test/tests/prefs
 NIGHTLY64 = "C:/Program Files/%s/firefox.exe -height 768 -width 1024" % (APP_NAME)
 PATH_FIREFOX = NIGHTLY64
 
-if APP_NAME == 'Nightly':
-    PATH_IMGS = '../images_nightly64/'
+OS_VERSION = Settings.getOSVersion()
+
+if Settings.isWindows():
+    OS = "WIN"
+    if OS_VERSION == "10.0" or OS_VERSION == "6.3":
+        print('OS: %s - %s' % (OS, OS_VERSION))
+        if APP_NAME == 'Nightly':
+            PATH_IMGS = '../images_nightly64/'
+        else:
+            PATH_IMGS = '../images_release32/'
+            print('TBD -> need images for GR32!!')
+            exit(1) 
+    else:
+        print "Not windows 10"
+        exit(1)
+
+elif Settings.isLinux():
+    print "is Linux!"
+    exit(1)
+
+elif Settings.isMac():
+    print "is Mac"
+    exit(1)
+
 else:
-    PATH_IMGS = '../images_release32/'
-    print('TBD -> need images for GR32!!')
-    exit(1) 
-    
+    print "System not recognized"
+    exit(2)
 
 URL_TEST_PAGE = 'https://pdehaan.github.io/push-notification-test'
 

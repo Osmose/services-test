@@ -82,13 +82,33 @@ PATH_PROFILE = <span class="str">"C:/Jenkins/workspace/services-test/autopush/e2
 NIGHTLY64 = <span class="str">"C:/Program Files/%s/firefox.exe -height 768 -width 1024"</span> % (APP_NAME)
 PATH_FIREFOX = NIGHTLY64
 
-<span class="kw">if</span> APP_NAME == <span class="str">'Nightly'</span>:
-    PATH_IMGS = <span class="str">'../images_nightly64/'</span>
-<span class="kw">else</span>:
-    PATH_IMGS = <span class="str">'../images_release32/'</span>
-    <span class="kw">print</span>(<span class="str">'TBD -&gt; need images for GR32!!'</span>)
+OS_VERSION = Settings.getOSVersion()
+
+<span class="kw">if</span> Settings.isWindows():
+    OS = <span class="str">"WIN"</span>
+    <span class="kw">if</span> OS_VERSION == <span class="str">"10.0"</span> <span class="kw">or</span> OS_VERSION == <span class="str">"6.3"</span>:
+        <span class="kw">print</span>(<span class="str">'OS: %s - %s'</span> % (OS, OS_VERSION))
+        <span class="kw">if</span> APP_NAME == <span class="str">'Nightly'</span>:
+            PATH_IMGS = <span class="str">'../images_nightly64/'</span>
+        <span class="kw">else</span>:
+            PATH_IMGS = <span class="str">'../images_release32/'</span>
+            <span class="kw">print</span>(<span class="str">'TBD -&gt; need images for GR32!!'</span>)
+            exit(<span class="dig">1</span>)
+    <span class="kw">else</span>:
+        <span class="kw">print</span> <span class="str">"Not windows 10"</span>
+        exit(<span class="dig">1</span>)
+
+<span class="kw">elif</span> Settings.isLinux():
+    <span class="kw">print</span> <span class="str">"is Linux!"</span>
     exit(<span class="dig">1</span>)
 
+<span class="kw">elif</span> Settings.isMac():
+    <span class="kw">print</span> <span class="str">"is Mac"</span>
+    exit(<span class="dig">1</span>)
+
+<span class="kw">else</span>:
+    <span class="kw">print</span> <span class="str">"System not recognized"</span>
+    exit(<span class="dig">2</span>)
 
 URL_TEST_PAGE = <span class="str">'https://pdehaan.github.io/push-notification-test'</span>
 
