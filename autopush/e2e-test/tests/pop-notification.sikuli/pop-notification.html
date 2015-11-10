@@ -77,92 +77,98 @@
 <span class="kw">else</span>:
     APP_NAME = <span class="str">'Nightly'</span>
 
-PATH_PROFILE = <span class="str">"C:/Jenkins/workspace/services-test/autopush/e2e-test/tests/prefs/prefs.js"</span>
-
-NIGHTLY64 = <span class="str">"C:/Program Files/%s/firefox.exe -height 768 -width 1024"</span> % (APP_NAME)
-PATH_FIREFOX = NIGHTLY64
-
 OS_VERSION = Settings.getOSVersion()
 
 <span class="kw">if</span> Settings.isWindows():
-    OS = <span class="str">"WIN"</span>
-    <span class="kw">if</span> OS_VERSION == <span class="str">"10.0"</span> <span class="kw">or</span> OS_VERSION == <span class="str">"6.3"</span>:
+    OS = <span class="str">'WIN'</span>
+    <span class="kw">if</span> OS_VERSION == <span class="str">'10.0'</span> <span class="kw">or</span> OS_VERSION == <span class="str">'6.3'</span>:
         <span class="kw">print</span>(<span class="str">'OS: %s - %s'</span> % (OS, OS_VERSION))
         <span class="kw">if</span> APP_NAME == <span class="str">'Nightly'</span>:
             PATH_IMGS = <span class="str">'../images_nightly64/'</span>
+            PATH_BIN = <span class="str">'C:/Program Files'</span>
         <span class="kw">else</span>:
             PATH_IMGS = <span class="str">'../images_release32/'</span>
-            <span class="kw">print</span>(<span class="str">'TBD -&gt; need images for GR32!!'</span>)
+            PATH_BIN = <span class="str">'C:/Program Files (x86)'</span>
+            <span class="kw">print</span> <span class="str">"no images found for this OS - ABORTING!"</span>
             exit(<span class="dig">1</span>)
     <span class="kw">else</span>:
-        <span class="kw">print</span> <span class="str">"Not windows 10"</span>
+        <span class="kw">print</span> <span class="str">'Not windows 10'</span>
         exit(<span class="dig">1</span>)
 
 <span class="kw">elif</span> Settings.isLinux():
-    <span class="kw">print</span> <span class="str">"is Linux!"</span>
+    OS = <span class="str">"LINUX"</span>
+    <span class="kw">print</span>(<span class="str">'OS: %s - %s'</span> % (OS, OS_VERSION))
+    <span class="kw">print</span> <span class="str">"no images found for this OS - ABORTING!"</span>
     exit(<span class="dig">1</span>)
 
 <span class="kw">elif</span> Settings.isMac():
-    <span class="kw">print</span> <span class="str">"is Mac"</span>
+    OS = <span class="str">'OSX'</span>
+    <span class="kw">print</span>(<span class="str">'OS: %s - %s'</span> % (OS, OS_VERSION))
+    <span class="kw">print</span> <span class="str">'no images found for this OS - ABORTING!'</span>
     exit(<span class="dig">1</span>)
 
 <span class="kw">else</span>:
-    <span class="kw">print</span> <span class="str">"System not recognized"</span>
-    exit(<span class="dig">2</span>)
+    <span class="kw">print</span> <span class="str">'OS not recognized - ABORTING!'</span>
+    exit(<span class="dig">1</span>)
 
 URL_TEST_PAGE = <span class="str">'https://pdehaan.github.io/push-notification-test'</span>
 
-IMG_REFRESH = PATH_IMGS + <img src="btn_refresh.png" /> <span class="cmt"># </span>
-IMG_ALWAYS_RECEIVE_NOTIFICATIONS = PATH_IMGS + <img src="btn_always_receive.png" />
-IMG_BTN_POP_NOTIFICATION = PATH_IMGS + <img src="btn_pop_notification.png" />
-IMG_WIN_POP_NOTIFICATION = PATH_IMGS + <img src="win_pop_notification.png" />
+PATH_PROFILE = <span class="str">'C:/Jenkins/workspace/autopush_e2e-test_prod/services-test/autopush/e2e-test/tests/prefs/prefs.js'</span>
+NIGHTLY64 = <span class="str">'%s/%s/firefox.exe -height 768 -width 1024'</span> % (PATH_BIN, APP_NAME)
+PATH_FIREFOX = NIGHTLY64
+IMG_REFRESH = PATH_IMGS + <span class="str">'btn_refresh.png'</span>
+IMG_ALWAYS_RECEIVE_NOTIFICATIONS = PATH_IMGS + <span class="str">'btn_always_receive.png'</span>
+IMG_BTN_POP_NOTIFICATION = PATH_IMGS + <span class="str">'btn_pop_notification.png'</span>
+IMG_WIN_POP_NOTIFICATION = PATH_IMGS + <span class="str">'win_pop_notification.png'</span>
 LINE = <span class="str">'--------------------------'</span>
 
 
 firefox = App(APP_NAME)
 
-<span class="kw">def</span> header(label):
-    <span class="kw">return</span> <span class="str">'%s\n%s\n%s'</span> % (LINE, label, LINE)
+<span class="kw">def</span> print_header(label):
+    <span class="kw">print</span> <span class="str">'%s\n%s\n%s'</span> % (LINE, label, LINE)
 
 <span class="kw">def</span> setup():
-    <span class="cmt"># firefox.close()
-</span>
-    <span class="kw">print</span> header(<span class="str">'SETUP'</span>)
+    print_header(<span class="str">'SETUP'</span>)
     firefox.open(PATH_FIREFOX)
     <span class="skw">sleep</span>(<span class="dig">3</span>)
     firefox.focus()
+    print_header(<span class="str">'TEST'</span>)
 
 <span class="kw">def</span> teardown():
-
-    <span class="cmt">#print('%s\n%s\n%s' % (LINE, 'TEARDOWN', LINE))
-</span>    <span class="kw">print</span> header(<span class="str">'TEARDOWN'</span>)
+    print_header(<span class="str">'TEARDOWN'</span>)
     <span class="kw">print</span>(<span class="str">'closing browser now'</span>)
     <span class="skw">type</span>(<span class="str">'w'</span>, Key.SHIFT + Key.CTRL)
     <span class="kw">print</span>(<span class="str">'Firefox closed'</span>)
+    <span class="kw">print</span>(<span class="str">'TEST COMPLETE!'</span>)
+
+<span class="kw">def</span> enter_url():
+    <span class="kw">print</span>(<span class="str">'ENTER URL'</span>)
+    <span class="skw">type</span>(<span class="str">"l"</span>, Key.CTRL)
+    <span class="skw">type</span>(URL_TEST_PAGE + Key.ENTER)
+
+<span class="kw">def</span> always_receive_notifications():
+    <span class="kw">print</span>(<span class="str">'PERMISSIONS: &lt;Always Receive Notifications?&gt;'</span>)
+    <span class="kw">if</span> exists(IMG_ALWAYS_RECEIVE_NOTIFICATIONS):
+        <span class="skw">click</span>(IMG_ALWAYS_RECEIVE_NOTIFICATIONS)
+
+<span class="kw">def</span> click_button_pop_notification():
+    <span class="skw">click</span>(IMG_BTN_POP_NOTIFICATION)
+    <span class="skw">sleep</span>(<span class="dig">2</span>)
+
+<span class="kw">def</span> verify_pop_notification():
+    <span class="kw">print</span> <span class="str">"POP NOTIFICATION: ???"</span>
+    <span class="skw">wait</span>(IMG_WIN_POP_NOTIFICATION)
+    <span class="kw">print</span>(<span class="str">'POP NOTIFICATION: COMPLETE!'</span>)
+    <span class="kw">print</span>(<span class="str">'POP NOTIFICATION: WAITING FOR VANISH.....'</span>)
+    waitVanish(IMG_WIN_POP_NOTIFICATION)
 
 setup()
 
-<span class="kw">print</span> header(<span class="str">'TEST'</span>)
-
-<span class="skw">type</span>(<span class="str">"l"</span>, Key.CTRL) <span class="cmt"># Focus on location address bar</span>
-<span class="skw">type</span>(URL_TEST_PAGE + Key.ENTER)
-
-
-<span class="skw">click</span>(IMG_BTN_POP_NOTIFICATION)
-
-<span class="skw">sleep</span>(<span class="dig">2</span>)
-
-<span class="kw">print</span>(<span class="str">'PERMISSIONS: &lt;Always Receive Notifications?&gt;'</span>)
-<span class="kw">if</span> exists(IMG_ALWAYS_RECEIVE_NOTIFICATIONS):
-    <span class="skw">click</span>(IMG_ALWAYS_RECEIVE_NOTIFICATIONS)
-
-<span class="kw">print</span> <span class="str">"POP NOTIFICATION: ???"</span>
-<span class="skw">wait</span>(IMG_WIN_POP_NOTIFICATION)
-<span class="kw">print</span>(<span class="str">'POP NOTIFICATION: COMPLETE!'</span>)
-<span class="kw">print</span>(<span class="str">'POP NOTIFICATION: WAITING FOR VANISH.....'</span>)
-waitVanish(IMG_WIN_POP_NOTIFICATION)
-<span class="kw">print</span>(<span class="str">'TEST COMPLETE!'</span>)
-
+enter_url()
+click_button_pop_notification()
+always_receive_notifications()
+verify_pop_notification()
 teardown()
 </pre>
 </body>

@@ -2,6 +2,13 @@
 
 SKIP_INSTALL="$1"
 DIR=`dirname "$0"`; DIR=`eval "cd \"$DIR\" && pwd"`
+
+IFS='_'  read -a array <<< "${JOB_NAME}"
+
+APP_NAME="${array[0]}"
+TEST_TYPE="${array[1]}"
+TEST_ENV="${array[2]}"
+
 echo
 echo "run.sh PATH: $DIR"
 echo
@@ -66,20 +73,17 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
 elif [[ "$OSTYPE" == "cygwin"* ]]; then
     PATH_FIREFOX="/cygdrive/c/Program Files/Nightly/firefox.exe"
     PATH_SIKULI="/cygdrive/c/SikuliX/runsikulix.cmd"
-    PATH_JENKINS="C:/Jenkins/workspace"
+    PATH_JENKINS="C:/Jenkins/workspace/$JOB_NAME"
 
     AUTOPUSH_TESTS="$PATH_JENKINS/services-test/autopush/e2e-test/tests/pop-notification.sikuli"
 
-    $PATH_SIKULI -c -r $AUTOPUSH_TESTS
 
     echo $PATH_FIREFOX
     echo $PATH_SIKULI
-    exit
 
 else
     echo "This should be win - not implemented - ABORTING!"
     exit
-
 fi
 
 echo
@@ -88,4 +92,4 @@ echo "RUN TEST"
 echo "------------------------------------"
 echo
 
-echo "run sikuli test now"
+$PATH_SIKULI -c -r $AUTOPUSH_TESTS
