@@ -14,6 +14,8 @@ Includes
 * Each project directory contains sub-directories (1 per test type)
 * Within each test type sub-directory you will find a "run.sh" file which should install all dependencies and kick off a test of the type indicated by the parent directory
 * Any additional files needed by that test type should be self-contained in that directory.
+* Test components shared between tests (i.e. firefox accounts login module), should be added to services-test/\_shared directory
+* Misc. tools/scripts should be added to services-test/\_utils directory
 
 Docker Instructions
 ----------------------
@@ -24,7 +26,7 @@ To build your own image from the latest code, from the root of services-test (wh
 * docker build -t mozilla-services/services-test .
 * docker run -i -t mozilla-services/services-test /bin/bash
 
-Run tests from the image’s bash shell, e.g.:
+Run tests from the image's bash shell, e.g.:
 * $ absearch/schema-check/run.sh
 
 TODO: Docker hub

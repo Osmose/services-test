@@ -3,6 +3,7 @@
 *.py[cod]
 *.sw[op]
 *.dmg
+*~
 
 .Python
 build/
