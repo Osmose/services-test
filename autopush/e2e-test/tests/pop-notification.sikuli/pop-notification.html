@@ -74,8 +74,10 @@
 
 <span class="kw">if</span> os.getenv(<span class="str">'APP_NAME'</span>):
     APP_NAME = os.getenv(<span class="str">'APP_NAME'</span>)
+    BUILD_NUMBER = os.getenv(<span class="str">'BUILD_NUMBER'</span>)
 <span class="kw">else</span>:
     APP_NAME = <span class="str">'Nightly'</span>
+    BUILD_NUMBER = <span class="str">'000'</span>
 
 OS_VERSION = Settings.getOSVersion()
 
@@ -122,8 +124,28 @@ IMG_BTN_POP_NOTIFICATION = PATH_IMGS + <span class="str">'btn_pop_notification.p
 IMG_WIN_POP_NOTIFICATION = PATH_IMGS + <span class="str">'win_pop_notification.png'</span>
 LINE = <span class="str">'--------------------------'</span>
 
-
+BIN_MINICAP = <span class="str">'C:\\Program Files (x86)\\MiniCap\MiniCap.exe'</span>
+PATH_SCREENSHOTS = <span class="str">'C:\\Jenkins\\workspace\\screenshots'</span>
+URL_SCREENSHOTS = <span class="str">'https://services-qa-jenkins.stage.mozaws.net:8443/job/screenshots/ws'</span>
 firefox = App(APP_NAME)
+
+screenshot_counter = <span class="dig">0</span>
+
+<span class="kw">def</span> screenshot():
+    <span class="kw">from</span> subprocess <span class="kw">import</span> Popen, PIPE
+    <span class="kw">global</span> screenshot_counter
+    <span class="kw">print</span>(<span class="str">'taking screenshot'</span>)
+    suffix = <span class="str">'%s_%s'</span> % (BUILD_NUMBER, screenshot_counter)
+    name_screenshot = <span class="str">'%s\\screenshot_%s.jpg'</span> % (PATH_SCREENSHOTS, suffix)
+    cmd = [BIN_MINICAP, <span class="str">'-capturescreen'</span>, <span class="str">'-exit'</span>, <span class="str">'-closeapp'</span>, <span class="str">'-save'</span>, name_screenshot]
+    <span class="kw">print</span>(<span class="str">'%s/screenshot_%s.jpg'</span> % (URL_SCREENSHOTS, suffix))
+    proc = Popen(cmd, stdout=PIPE)
+    output = proc.communicate()[<span class="dig">0</span>]
+    <span class="kw">print</span> output
+    screenshot_counter += <span class="dig">1</span>
+
+
+
 
 <span class="kw">def</span> print_header(label):
     <span class="kw">print</span> <span class="str">'%s\n%s\n%s'</span> % (LINE, label, LINE)
@@ -138,30 +160,66 @@ firefox = App(APP_NAME)
 <span class="kw">def</span> teardown():
     print_header(<span class="str">'TEARDOWN'</span>)
     <span class="kw">print</span>(<span class="str">'closing browser now'</span>)
-    <span class="skw">type</span>(<span class="str">'w'</span>, Key.SHIFT + Key.CTRL)
+    <span class="kw">try</span>:
+        <span class="skw">type</span>(<span class="str">'w'</span>, Key.SHIFT + Key.CTRL)
+    <span class="kw">except</span> FindFailed <span class="kw">as</span> e:
+        screenshot()
+        <span class="kw">print</span> <span class="str">'ERROR: %s'</span> % e
+        exit(<span class="dig">1</span>)
     <span class="kw">print</span>(<span class="str">'Firefox closed'</span>)
     <span class="kw">print</span>(<span class="str">'TEST COMPLETE!'</span>)
 
 <span class="kw">def</span> enter_url():
     <span class="kw">print</span>(<span class="str">'ENTER URL'</span>)
+
     <span class="skw">type</span>(<span class="str">"l"</span>, Key.CTRL)
-    <span class="skw">type</span>(URL_TEST_PAGE + Key.ENTER)
+
+    <span class="kw">try</span>:
+        <span class="skw">type</span>(URL_TEST_PAGE + Key.ENTER)
+    <span class="kw">except</span> FindFailed <span class="kw">as</span> e:
+        screenshot()
+        <span class="kw">print</span> <span class="str">'ERROR: %s'</span> % e
+        exit(<span class="dig">1</span>)
 
 <span class="kw">def</span> always_receive_notifications():
     <span class="kw">print</span>(<span class="str">'PERMISSIONS: &lt;Always Receive Notifications?&gt;'</span>)
-    <span class="kw">if</span> exists(IMG_ALWAYS_RECEIVE_NOTIFICATIONS):
-        <span class="skw">click</span>(IMG_ALWAYS_RECEIVE_NOTIFICATIONS)
+    <span class="kw">try</span>:
+        <span class="kw">if</span> exists(IMG_ALWAYS_RECEIVE_NOTIFICATIONS):
+            <span class="skw">click</span>(IMG_ALWAYS_RECEIVE_NOTIFICATIONS)
+    <span class="kw">except</span> FindFailed <span class="kw">as</span> e:
+        screenshot()
+        <span class="kw">print</span> <span class="str">'ERROR: %s'</span> % e
+        exit(<span class="dig">1</span>)
 
 <span class="kw">def</span> click_button_pop_notification():
-    <span class="skw">click</span>(IMG_BTN_POP_NOTIFICATION)
+
+    <span class="kw">try</span>:
+        <span class="skw">click</span>(IMG_BTN_POP_NOTIFICATION)
+    <span class="kw">except</span> FindFailed <span class="kw">as</span> e:
+        screenshot()
+        <span class="kw">print</span> <span class="str">'ERROR: %s'</span> % e
+        exit(<span class="dig">1</span>)
     <span class="skw">sleep</span>(<span class="dig">2</span>)
 
 <span class="kw">def</span> verify_pop_notification():
     <span class="kw">print</span> <span class="str">"POP NOTIFICATION: ???"</span>
-    <span class="skw">wait</span>(IMG_WIN_POP_NOTIFICATION)
+    <span class="cmt"># wait(Pattern(IMG_WIN_POP_NOTIFICATION).similar(50), 10)</span>
+    <span class="kw">try</span>:
+        <span class="skw">wait</span>(IMG_WIN_POP_NOTIFICATION, <span class="dig">10</span>)
+    <span class="kw">except</span> FindFailed <span class="kw">as</span> e:
+        screenshot()
+        <span class="kw">print</span> <span class="str">'ERROR: %s'</span> % e
+        exit(<span class="dig">1</span>)
+
     <span class="kw">print</span>(<span class="str">'POP NOTIFICATION: COMPLETE!'</span>)
     <span class="kw">print</span>(<span class="str">'POP NOTIFICATION: WAITING FOR VANISH.....'</span>)
-    waitVanish(IMG_WIN_POP_NOTIFICATION)
+
+    <span class="kw">try</span>:
+        waitVanish(IMG_WIN_POP_NOTIFICATION, <span class="dig">10</span>)
+    <span class="kw">except</span> FindFailed <span class="kw">as</span> e:
+        screenshot()
+        <span class="kw">print</span> <span class="str">'ERROR: %s'</span> % e
+        exit(<span class="dig">1</span>)
 
 setup()
 

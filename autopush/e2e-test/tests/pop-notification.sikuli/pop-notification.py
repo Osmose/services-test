@@ -2,8 +2,10 @@ import os
 
 if os.getenv('APP_NAME'):
     APP_NAME = os.getenv('APP_NAME')
+    BUILD_NUMBER = os.getenv('BUILD_NUMBER')
 else:
     APP_NAME = 'Nightly'
+    BUILD_NUMBER = '000'
 
 OS_VERSION = Settings.getOSVersion()
 
@@ -50,8 +52,28 @@ IMG_BTN_POP_NOTIFICATION = PATH_IMGS + 'btn_pop_notification.png'
 IMG_WIN_POP_NOTIFICATION = PATH_IMGS + 'win_pop_notification.png' 
 LINE = '--------------------------'
 
-
+BIN_MINICAP = 'C:\\Program Files (x86)\\MiniCap\MiniCap.exe'
+PATH_SCREENSHOTS = 'C:\\Jenkins\\workspace\\screenshots'
+URL_SCREENSHOTS = 'https://services-qa-jenkins.stage.mozaws.net:8443/job/screenshots/ws'
 firefox = App(APP_NAME)
+
+screenshot_counter = 0
+
+def screenshot():
+    from subprocess import Popen, PIPE
+    global screenshot_counter
+    print('taking screenshot')
+    suffix = '%s_%s' % (BUILD_NUMBER, screenshot_counter)
+    name_screenshot = '%s\\screenshot_%s.jpg' % (PATH_SCREENSHOTS, suffix)
+    cmd = [BIN_MINICAP, '-capturescreen', '-exit', '-closeapp', '-save', name_screenshot] 
+    print('%s/screenshot_%s.jpg' % (URL_SCREENSHOTS, suffix))
+    proc = Popen(cmd, stdout=PIPE)
+    output = proc.communicate()[0]
+    print output
+    screenshot_counter += 1
+    
+   
+   
 
 def print_header(label):
     print '%s\n%s\n%s' % (LINE, label, LINE)
@@ -66,31 +88,67 @@ def setup():
 def teardown():
     print_header('TEARDOWN')
     print('closing browser now')
-    type('w', Key.SHIFT + Key.CTRL)
+    try:
+        type('w', Key.SHIFT + Key.CTRL)
+    except FindFailed as e:
+        screenshot()
+        print 'ERROR: %s' % e
+        exit(1)
     print('Firefox closed')
     print('TEST COMPLETE!')
 
 def enter_url():
     print('ENTER URL')
+   
     type("l", Key.CTRL) 
-    type(URL_TEST_PAGE + Key.ENTER) 
+    
+    try:
+        type(URL_TEST_PAGE + Key.ENTER) 
+    except FindFailed as e:
+        screenshot()
+        print 'ERROR: %s' % e
+        exit(1)
 
 def always_receive_notifications():
     print('PERMISSIONS: <Always Receive Notifications?>')
-    if exists(IMG_ALWAYS_RECEIVE_NOTIFICATIONS):
-        click(IMG_ALWAYS_RECEIVE_NOTIFICATIONS)
+    try:
+        if exists(IMG_ALWAYS_RECEIVE_NOTIFICATIONS):
+            click(IMG_ALWAYS_RECEIVE_NOTIFICATIONS)
+    except FindFailed as e:
+        screenshot()
+        print 'ERROR: %s' % e
+        exit(1)
 
 def click_button_pop_notification():
-    click(IMG_BTN_POP_NOTIFICATION)
+  
+    try:
+        click(IMG_BTN_POP_NOTIFICATION)
+    except FindFailed as e:
+        screenshot()
+        print 'ERROR: %s' % e
+        exit(1)
     sleep(2)
     
 def verify_pop_notification():
     print "POP NOTIFICATION: ???"
-    wait(IMG_WIN_POP_NOTIFICATION)
+    # wait(Pattern(IMG_WIN_POP_NOTIFICATION).similar(50), 10)
+    try:
+        wait(IMG_WIN_POP_NOTIFICATION, 10)
+    except FindFailed as e:
+        screenshot()
+        print 'ERROR: %s' % e
+        exit(1)
+    
     print('POP NOTIFICATION: COMPLETE!')
     print('POP NOTIFICATION: WAITING FOR VANISH.....')
-    waitVanish(IMG_WIN_POP_NOTIFICATION)
-    
+
+    try:
+        waitVanish(IMG_WIN_POP_NOTIFICATION, 10)
+    except FindFailed as e:
+        screenshot()
+        print 'ERROR: %s' % e
+        exit(1)
+
 setup()
 
 enter_url()

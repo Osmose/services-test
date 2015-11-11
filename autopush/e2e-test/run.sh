@@ -11,6 +11,10 @@ TEST_ENV="${array[2]}"
 
 echo
 echo "run.sh PATH: $DIR"
+echo "Jenkins BUILD_NUMBER: $BUILD_NUMBER"
+export APP_NAME='Nightly'
+
+
 echo
 VENV_NAME="venv"
 VENV_BIN="$DIR/$VENV_NAME/bin"
