@@ -41,9 +41,11 @@ echo pwd
 
 . $DIR/$VENV_NAME/bin/activate 
 
+"""
 if [ -z "$SKIP_INSTALL" ]; then
     $VENV_BIN/pip install mozdownload
 fi
+"""
 
 echo
 echo "------------------------------------"

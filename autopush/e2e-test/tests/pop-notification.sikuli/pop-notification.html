@@ -71,6 +71,7 @@
 </div>
 <pre class="sikuli-code">
 <span class="kw">import</span> os
+<span class="kw">import</span> sys
 
 <span class="kw">if</span> os.getenv(<span class="str">'APP_NAME'</span>):
     APP_NAME = os.getenv(<span class="str">'APP_NAME'</span>)
@@ -170,7 +171,7 @@ Shared test setup.
     print_header(<span class="str">'SETUP'</span>)
     <span class="kw">try</span>:
         firefox.open(PATH_FIREFOX)
-        <span class="skw">sleep</span>(<span class="dig">3</span>)
+        <span class="skw">sleep</span>(<span class="dig">5</span>)
         firefox.focus()
     <span class="kw">except</span> FindFailed <span class="kw">as</span> e:
         exit_with_screenshot(e, <span class="str">'_firefox_open'</span>)
@@ -198,12 +199,13 @@ Open the specified URL in Firefox.
 """</span>
 <span class="kw">def</span> enter_url(url = URL_TEST_PAGE):
     <span class="kw">print</span>(<span class="str">'ENTER URL'</span>)
-        <span class="cmt"># Focus on Firefox address bar</span>
+    <span class="cmt"># Focus on Firefox address bar</span>
     <span class="skw">type</span>(<span class="str">"l"</span>, Key.CTRL)
     <span class="kw">try</span>:
         <span class="skw">click</span>(URL_SEARCH)
     <span class="kw">except</span> FindFailed <span class="kw">as</span> e:
         exit_with_screenshot(e, <span class="str">'_url_test_page'</span>)
+
     <span class="skw">type</span>(url + Key.ENTER)
 
 
@@ -249,7 +251,6 @@ Verify the pop notification was displayed (and auto-closed).
         waitVanish(IMG_WIN_POP_NOTIFICATION, <span class="dig">10</span>)
     <span class="kw">except</span> FindFailed <span class="kw">as</span> e:
         exit_with_screenshot(e, <span class="str">'_verify_vanish_pop_notification'</span>)
-
 
 setup()
 enter_url()

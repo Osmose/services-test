@@ -1,4 +1,5 @@
 import os
+import sys
 
 if os.getenv('APP_NAME'):
     APP_NAME = os.getenv('APP_NAME')
@@ -98,7 +99,7 @@ def setup():
     print_header('SETUP')
     try:
         firefox.open(PATH_FIREFOX)
-        sleep(3)
+        sleep(5)
         firefox.focus()
     except FindFailed as e:
         exit_with_screenshot(e, '_firefox_open')
@@ -126,12 +127,13 @@ Open the specified URL in Firefox.
 """
 def enter_url(url = URL_TEST_PAGE):
     print('ENTER URL')
-        # Focus on Firefox address bar
+    # Focus on Firefox address bar
     type("l", Key.CTRL)
     try:
         click(URL_SEARCH)
     except FindFailed as e:
         exit_with_screenshot(e, '_url_test_page')
+    
     type(url + Key.ENTER) 
 
 
@@ -177,7 +179,6 @@ def verify_pop_notification():
         waitVanish(IMG_WIN_POP_NOTIFICATION, 10)
     except FindFailed as e:
         exit_with_screenshot(e, '_verify_vanish_pop_notification')
-
 
 setup()
 enter_url()
