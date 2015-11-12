@@ -46,11 +46,12 @@ URL_TEST_PAGE = 'https://pdehaan.github.io/push-notification-test'
 PATH_PROFILE = 'C:/Jenkins/workspace/autopush_e2e-test_prod/services-test/autopush/e2e-test/tests/prefs/prefs.js'             
 NIGHTLY64 = '%s/%s/firefox.exe -height 768 -width 1024' % (PATH_BIN, APP_NAME)
 PATH_FIREFOX = NIGHTLY64
-URL_SEARCH = PATH_IMGS + 'url_search.png'
+#URL_SEARCH = PATH_IMGS + 'url_search.png'
 IMG_REFRESH = PATH_IMGS + 'btn_refresh.png'
 IMG_ALWAYS_RECEIVE_NOTIFICATIONS = PATH_IMGS + 'btn_always_receive.png'
 IMG_BTN_POP_NOTIFICATION = PATH_IMGS + 'btn_pop_notification.png' 
 IMG_WIN_POP_NOTIFICATION = PATH_IMGS + 'win_pop_notification.png' 
+ICON_HELLO = PATH_IMGS + 'icon_hello.png'
 LINE = '--------------------------'
 
 BIN_MINICAP = 'C:\\Program Files (x86)\\MiniCap\\MiniCap.exe'
@@ -58,13 +59,13 @@ PATH_SCREENSHOTS = 'C:\\Jenkins\\workspace\\screenshots'
 URL_SCREENSHOTS = 'https://services-qa-jenkins.stage.mozaws.net:8443/job/screenshots/ws'
 firefox = App(APP_NAME)
 
-screenshot_counter = 0
+#screenshot_counter = 0
 """
 Take a screenshot using MiniCap.exe.
 """
 def screenshot(function_name = ''):
     from subprocess import Popen, PIPE
-    global screenshot_counter
+    #global screenshot_counter
     print('taking screenshot')
     #suffix = '%s_$uniquenum0$%s' % (BUILD_NUMBER, function_name)
     suffix = '_%s%s' % (BUILD_NUMBER, function_name)
@@ -75,16 +76,17 @@ def screenshot(function_name = ''):
     proc = Popen(cmd, stdout=PIPE)
     output = proc.communicate()[0]
     print output
-    screenshot_counter += 1
+    #screenshot_counter += 1
 
 
 """
 Log an error, take a screenshot of the current state, and exit with an error code.
 """
-def exit_with_screenshot(e, function_name=''):
+def exit_with_error(e, function_name=''):
     print 'ERROR: %s' % e
     screenshot('_error%s' % function_name)
-    exit(1)
+    teardown(1)
+    #exit(1)
 
 
 """
@@ -104,7 +106,7 @@ def setup():
         sleep(5)
         firefox.focus()
     except FindFailed as e:
-        exit_with_screenshot(e, '_firefox_open')
+        exit_with_error(e, '_firefox_open')
 
     print_header('BEGIN TEST')
 
@@ -112,16 +114,16 @@ def setup():
 """
 Shared test teardown.
 """
-def teardown():
+def teardown(exit_code=0):
     print_header('TEARDOWN')
     print 'closing browser now'
-    try:
-        type('w', Key.SHIFT + Key.CTRL)
-    except FindFailed as e:
-        exit_with_screenshot(e, '_teardown')
-    
+    type('w', Key.SHIFT + Key.CTRL) 
     print('Firefox closed')
-    print('TEST COMPLETE!')
+    if exit_code == 0:
+        print('TEST COMPLETE!')
+    else:
+        print('TEST FAILED!')
+    exit(exit_code)
 
 
 """
@@ -132,9 +134,9 @@ def enter_url(url = URL_TEST_PAGE):
     # Focus on Firefox address bar
     type("l", Key.CTRL)
     try:
-        click(URL_SEARCH)
+        wait(ICON_HELLO)
     except FindFailed as e:
-        exit_with_screenshot(e, '_url_test_page')
+        exit_with_error(e, '_url_test_page')
     
     type(url + Key.ENTER) 
 
@@ -148,20 +150,22 @@ def always_receive_notifications():
         if exists(IMG_ALWAYS_RECEIVE_NOTIFICATIONS):
             click(IMG_ALWAYS_RECEIVE_NOTIFICATIONS)
     except FindFailed as e:
-        exit_with_screenshot(e, '_always_receive_notifications')
-
+        exit_with_error(e, '_always_receive_notifications')
 
 """
 Click the popup notification button in our test app.
 """
 def click_button_pop_notification():
     try:
+        wait(IMG_BTN_POP_NOTIFICATION)
+    except FindFailed as e:
+        exit_with_error(e, '_wait_btn_pop_notification')
+        
+    try:
         click(IMG_BTN_POP_NOTIFICATION)
         sleep(2)
     except FindFailed as e:
-        exit_with_screenshot(e, '_btn_pop_notification')
-
-
+        exit_with_error(e, '_btn_pop_notification')
 
 """
 Verify the pop notification was displayed (and auto-closed).
@@ -172,7 +176,7 @@ def verify_pop_notification():
         wait(IMG_WIN_POP_NOTIFICATION, 10)
         screenshot('_success')
     except FindFailed as e:
-        exit_with_screenshot(e, '_verify_pop_notification')
+        exit_with_error(e, '_verify_pop_notification')
     
     print('POP NOTIFICATION: COMPLETE!')
     print('POP NOTIFICATION: WAITING FOR VANISH.....')
@@ -180,7 +184,7 @@ def verify_pop_notification():
     try:
         waitVanish(IMG_WIN_POP_NOTIFICATION, 10)
     except FindFailed as e:
-        exit_with_screenshot(e, '_verify_vanish_pop_notification')
+        exit_with_error(e, '_verify_vanish_pop_notification')
 
 setup()
 enter_url()

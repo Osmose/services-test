@@ -118,11 +118,12 @@ URL_TEST_PAGE = <span class="str">'https://pdehaan.github.io/push-notification-t
 PATH_PROFILE = <span class="str">'C:/Jenkins/workspace/autopush_e2e-test_prod/services-test/autopush/e2e-test/tests/prefs/prefs.js'</span>
 NIGHTLY64 = <span class="str">'%s/%s/firefox.exe -height 768 -width 1024'</span> % (PATH_BIN, APP_NAME)
 PATH_FIREFOX = NIGHTLY64
-URL_SEARCH = PATH_IMGS + <span class="str">'url_search.png'</span>
+<span class="cmt">#URL_SEARCH = PATH_IMGS + 'url_search.png'</span>
 IMG_REFRESH = PATH_IMGS + <span class="str">'btn_refresh.png'</span>
 IMG_ALWAYS_RECEIVE_NOTIFICATIONS = PATH_IMGS + <span class="str">'btn_always_receive.png'</span>
 IMG_BTN_POP_NOTIFICATION = PATH_IMGS + <span class="str">'btn_pop_notification.png'</span>
 IMG_WIN_POP_NOTIFICATION = PATH_IMGS + <span class="str">'win_pop_notification.png'</span>
+ICON_HELLO = PATH_IMGS + <span class="str">'icon_hello.png'</span>
 LINE = <span class="str">'--------------------------'</span>
 
 BIN_MINICAP = <span class="str">'C:\\Program Files (x86)\\MiniCap\\MiniCap.exe'</span>
@@ -130,13 +131,13 @@ PATH_SCREENSHOTS = <span class="str">'C:\\Jenkins\\workspace\\screenshots'</span
 URL_SCREENSHOTS = <span class="str">'https://services-qa-jenkins.stage.mozaws.net:8443/job/screenshots/ws'</span>
 firefox = App(APP_NAME)
 
-screenshot_counter = <span class="dig">0</span>
+<span class="cmt">#screenshot_counter = 0</span>
 <span class="str">"""
 Take a screenshot using MiniCap.exe.
 """</span>
 <span class="kw">def</span> screenshot(function_name = <span class="str">''</span>):
     <span class="kw">from</span> subprocess <span class="kw">import</span> Popen, PIPE
-    <span class="kw">global</span> screenshot_counter
+    <span class="cmt">#global screenshot_counter</span>
     <span class="kw">print</span>(<span class="str">'taking screenshot'</span>)
     <span class="cmt">#suffix = '%s_$uniquenum0$%s' % (BUILD_NUMBER, function_name)</span>
     suffix = <span class="str">'_%s%s'</span> % (BUILD_NUMBER, function_name)
@@ -147,16 +148,17 @@ Take a screenshot using MiniCap.exe.
     proc = Popen(cmd, stdout=PIPE)
     output = proc.communicate()[<span class="dig">0</span>]
     <span class="kw">print</span> output
-    screenshot_counter += <span class="dig">1</span>
+    <span class="cmt">#screenshot_counter += 1</span>
 
 
 <span class="str">"""
 Log an error, take a screenshot of the current state, and exit with an error code.
 """</span>
-<span class="kw">def</span> exit_with_screenshot(e, function_name=<span class="str">''</span>):
+<span class="kw">def</span> exit_with_error(e, function_name=<span class="str">''</span>):
     <span class="kw">print</span> <span class="str">'ERROR: %s'</span> % e
     screenshot(<span class="str">'_error%s'</span> % function_name)
-    exit(<span class="dig">1</span>)
+    teardown(<span class="dig">1</span>)
+    <span class="cmt">#exit(1)</span>
 
 
 <span class="str">"""
@@ -176,7 +178,7 @@ Shared test setup.
         <span class="skw">sleep</span>(<span class="dig">5</span>)
         firefox.focus()
     <span class="kw">except</span> FindFailed <span class="kw">as</span> e:
-        exit_with_screenshot(e, <span class="str">'_firefox_open'</span>)
+        exit_with_error(e, <span class="str">'_firefox_open'</span>)
 
     print_header(<span class="str">'BEGIN TEST'</span>)
 
@@ -184,16 +186,16 @@ Shared test setup.
 <span class="str">"""
 Shared test teardown.
 """</span>
-<span class="kw">def</span> teardown():
+<span class="kw">def</span> teardown(exit_code=<span class="dig">0</span>):
     print_header(<span class="str">'TEARDOWN'</span>)
     <span class="kw">print</span> <span class="str">'closing browser now'</span>
-    <span class="kw">try</span>:
-        <span class="skw">type</span>(<span class="str">'w'</span>, Key.SHIFT + Key.CTRL)
-    <span class="kw">except</span> FindFailed <span class="kw">as</span> e:
-        exit_with_screenshot(e, <span class="str">'_teardown'</span>)
-
+    <span class="skw">type</span>(<span class="str">'w'</span>, Key.SHIFT + Key.CTRL)
     <span class="kw">print</span>(<span class="str">'Firefox closed'</span>)
-    <span class="kw">print</span>(<span class="str">'TEST COMPLETE!'</span>)
+    <span class="kw">if</span> exit_code == <span class="dig">0</span>:
+        <span class="kw">print</span>(<span class="str">'TEST COMPLETE!'</span>)
+    <span class="kw">else</span>:
+        <span class="kw">print</span>(<span class="str">'TEST FAILED!'</span>)
+    exit(exit_code)
 
 
 <span class="str">"""
@@ -204,9 +206,9 @@ Open the specified URL in Firefox.
     <span class="cmt"># Focus on Firefox address bar</span>
     <span class="skw">type</span>(<span class="str">"l"</span>, Key.CTRL)
     <span class="kw">try</span>:
-        <span class="skw">click</span>(URL_SEARCH)
+        <span class="skw">wait</span>(ICON_HELLO)
     <span class="kw">except</span> FindFailed <span class="kw">as</span> e:
-        exit_with_screenshot(e, <span class="str">'_url_test_page'</span>)
+        exit_with_error(e, <span class="str">'_url_test_page'</span>)
 
     <span class="skw">type</span>(url + Key.ENTER)
 
@@ -220,20 +222,22 @@ Make sure that Firefox can receive desktop notifications.
         <span class="kw">if</span> exists(IMG_ALWAYS_RECEIVE_NOTIFICATIONS):
             <span class="skw">click</span>(IMG_ALWAYS_RECEIVE_NOTIFICATIONS)
     <span class="kw">except</span> FindFailed <span class="kw">as</span> e:
-        exit_with_screenshot(e, <span class="str">'_always_receive_notifications'</span>)
-
+        exit_with_error(e, <span class="str">'_always_receive_notifications'</span>)
 
 <span class="str">"""
 Click the popup notification button in our test app.
 """</span>
 <span class="kw">def</span> click_button_pop_notification():
     <span class="kw">try</span>:
+        <span class="skw">wait</span>(IMG_BTN_POP_NOTIFICATION)
+    <span class="kw">except</span> FindFailed <span class="kw">as</span> e:
+        exit_with_error(e, <span class="str">'_wait_btn_pop_notification'</span>)
+
+    <span class="kw">try</span>:
         <span class="skw">click</span>(IMG_BTN_POP_NOTIFICATION)
         <span class="skw">sleep</span>(<span class="dig">2</span>)
     <span class="kw">except</span> FindFailed <span class="kw">as</span> e:
-        exit_with_screenshot(e, <span class="str">'_btn_pop_notification'</span>)
-
-
+        exit_with_error(e, <span class="str">'_btn_pop_notification'</span>)
 
 <span class="str">"""
 Verify the pop notification was displayed (and auto-closed).
@@ -244,7 +248,7 @@ Verify the pop notification was displayed (and auto-closed).
         <span class="skw">wait</span>(IMG_WIN_POP_NOTIFICATION, <span class="dig">10</span>)
         screenshot(<span class="str">'_success'</span>)
     <span class="kw">except</span> FindFailed <span class="kw">as</span> e:
-        exit_with_screenshot(e, <span class="str">'_verify_pop_notification'</span>)
+        exit_with_error(e, <span class="str">'_verify_pop_notification'</span>)
 
     <span class="kw">print</span>(<span class="str">'POP NOTIFICATION: COMPLETE!'</span>)
     <span class="kw">print</span>(<span class="str">'POP NOTIFICATION: WAITING FOR VANISH.....'</span>)
@@ -252,7 +256,7 @@ Verify the pop notification was displayed (and auto-closed).
     <span class="kw">try</span>:
         waitVanish(IMG_WIN_POP_NOTIFICATION, <span class="dig">10</span>)
     <span class="kw">except</span> FindFailed <span class="kw">as</span> e:
-        exit_with_screenshot(e, <span class="str">'_verify_vanish_pop_notification'</span>)
+        exit_with_error(e, <span class="str">'_verify_vanish_pop_notification'</span>)
 
 setup()
 enter_url()
