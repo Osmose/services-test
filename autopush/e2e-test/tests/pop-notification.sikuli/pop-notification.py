@@ -58,22 +58,24 @@ PATH_SCREENSHOTS = 'C:\\Jenkins\\workspace\\screenshots'
 URL_SCREENSHOTS = 'https://services-qa-jenkins.stage.mozaws.net:8443/job/screenshots/ws'
 firefox = App(APP_NAME)
 
+screenshot_counter = 0
 """
 Take a screenshot using MiniCap.exe.
 """
 def screenshot(function_name = ''):
     from subprocess import Popen, PIPE
-    # global screenshot_counter
+    global screenshot_counter
     print('taking screenshot')
-    suffix = '%s_$uniquenum0$%s' % (BUILD_NUMBER, function_name)
-    name_screenshot = '%s\\screenshot_%s.jpg' % (PATH_SCREENSHOTS, suffix)
+    #suffix = '%s_$uniquenum0$%s' % (BUILD_NUMBER, function_name)
+    suffix = '_%s%s' % (BUILD_NUMBER, function_name)
+    name_screenshot = '%s\\screenshot%s.jpg' % (PATH_SCREENSHOTS, suffix)
     cmd = [BIN_MINICAP, '-capturescreen', '-exit', '-closeapp', '-save', name_screenshot] 
     # the MiniCap vars break the following line:
-    #print('%s/screenshot_%s.jpg' % (URL_SCREENSHOTS, '%s_$uniquenum0$%s' % (BUILD_NUMBER, function_name)))
+    print('%s/screenshot%s.jpg' % (URL_SCREENSHOTS, suffix))
     proc = Popen(cmd, stdout=PIPE)
     output = proc.communicate()[0]
     print output
-    # screenshot_counter += 1
+    screenshot_counter += 1
 
 
 """

@@ -130,22 +130,24 @@ PATH_SCREENSHOTS = <span class="str">'C:\\Jenkins\\workspace\\screenshots'</span
 URL_SCREENSHOTS = <span class="str">'https://services-qa-jenkins.stage.mozaws.net:8443/job/screenshots/ws'</span>
 firefox = App(APP_NAME)
 
+screenshot_counter = <span class="dig">0</span>
 <span class="str">"""
 Take a screenshot using MiniCap.exe.
 """</span>
 <span class="kw">def</span> screenshot(function_name = <span class="str">''</span>):
     <span class="kw">from</span> subprocess <span class="kw">import</span> Popen, PIPE
-    <span class="cmt"># global screenshot_counter</span>
+    <span class="kw">global</span> screenshot_counter
     <span class="kw">print</span>(<span class="str">'taking screenshot'</span>)
-    suffix = <span class="str">'%s_$uniquenum0$%s'</span> % (BUILD_NUMBER, function_name)
-    name_screenshot = <span class="str">'%s\\screenshot_%s.jpg'</span> % (PATH_SCREENSHOTS, suffix)
+    <span class="cmt">#suffix = '%s_$uniquenum0$%s' % (BUILD_NUMBER, function_name)</span>
+    suffix = <span class="str">'_%s%s'</span> % (BUILD_NUMBER, function_name)
+    name_screenshot = <span class="str">'%s\\screenshot%s.jpg'</span> % (PATH_SCREENSHOTS, suffix)
     cmd = [BIN_MINICAP, <span class="str">'-capturescreen'</span>, <span class="str">'-exit'</span>, <span class="str">'-closeapp'</span>, <span class="str">'-save'</span>, name_screenshot]
     <span class="cmt"># the MiniCap vars break the following line:</span>
-    <span class="cmt">#print('%s/screenshot_%s.jpg' % (URL_SCREENSHOTS, '%s_$uniquenum0$%s' % (BUILD_NUMBER, function_name)))</span>
+    <span class="kw">print</span>(<span class="str">'%s/screenshot%s.jpg'</span> % (URL_SCREENSHOTS, suffix))
     proc = Popen(cmd, stdout=PIPE)
     output = proc.communicate()[<span class="dig">0</span>]
     <span class="kw">print</span> output
-    <span class="cmt"># screenshot_counter += 1</span>
+    screenshot_counter += <span class="dig">1</span>
 
 
 <span class="str">"""
