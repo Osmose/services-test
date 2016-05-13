@@ -79,6 +79,12 @@ This document describes the test plan for the `show-heartbeat` action.
    - `updateChannel` should be the channel of the Firefox browser being tested,
      e.g. `nightly`.
    - `fxVersion` should be the version of the Firefox browser being tested.
+   - `isDefaultBrowser` should be 0 if Firefox is not the default browser for
+     the system, and 1 if it is.
+   - `syncSetup` should be 0 if Firefox Sync has not been set up, and 1 if it
+     has.
+   - `searchEngine` should be a string signifying the default search engine
+     configured for Firefox.
 9. Refresh the page. A Heartbeat prompt should no longer appear. In the Storage
    Inspector in the DevTools, localStorage should have at least one entry with
    a key ending in `-lastShown` set to a timestamp value.
@@ -171,3 +177,9 @@ This document describes the test plan for the `show-heartbeat` action.
   - `updateChannel` should be the channel of the Firefox browser being tested,
     e.g. `nightly`.
   - `fxVersion` should be the version of the Firefox browser being tested.
+  - `isDefaultBrowser` should be 0 if Firefox is not the default browser for
+    the system, and 1 if it is.
+  - `syncSetup` should be 0 if Firefox Sync has not been set up, and 1 if it
+    has.
+  - `searchEngine` should be a string signifying the default search engine
+    configured for Firefox.
